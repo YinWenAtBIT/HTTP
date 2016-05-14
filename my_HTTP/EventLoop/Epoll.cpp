@@ -24,7 +24,7 @@ Epoll::Epoll(int listen, pthread_mutex_t * mutex, pthread_cond_t * cond):
 
 void Epoll::loop(ChannelList & work_list)
 {
-    int epfd = http_epoll_create(0);
+    int epfd = http_epoll_create(1024);
     struct epoll_event events[MAX_EVENT];
     epoll_add_event(epfd, _listenfd, EPOLLIN | EPOLLET);
 

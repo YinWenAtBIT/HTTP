@@ -16,8 +16,8 @@
 
 static const int MAX_EVENT = 50;
 
-Epoll::Epoll(int listen, pthread_mutex_t * mutex, pthread_cond_t * cond, std::function<void()> &callback):
-    _listenfd(listen), _mutex_ptr(mutex), _cond_ptr(cond), read_callback(callback)
+Epoll::Epoll(int listen, pthread_mutex_t * mutex, pthread_cond_t * cond):
+    _listenfd(listen), _mutex_ptr(mutex), _cond_ptr(cond)
 {
 
 }
@@ -51,8 +51,8 @@ void Epoll::add_to_channel(int fd, ChannelList & work_list)
 {
     Channel * new_one = new Channel(fd);
     new_one->set_read_flag(true);
-    new_one->set_read_callback(read_callback);
-    
+    std::function<void()> fct = [=](){read_callback(fd);};
+    new_one->set_read_callback(fct);
 
     pthread_mutex_lock(_mutex_ptr);
     work_list.push_back(new_one);
@@ -115,6 +115,10 @@ void Epoll::handle_accept(int epfd, int listenfd)
 }
 
 
+void Epoll::set_callback(std::function<void(int)> &fcn)
+{
+    read_callback = fcn;
+}
 
 void Epoll::set_fd_nonblocking(int fd)
 {

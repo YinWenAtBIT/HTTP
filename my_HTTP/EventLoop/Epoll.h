@@ -18,7 +18,8 @@ class Epoll
 {
 public:
     typedef std::list<Channel *> ChannelList;
-    Epoll(int listen_fd, pthread_mutex_t * mutex, pthread_cond_t * cond, std::function<void()> &callback);
+    Epoll(int listen_fd, pthread_mutex_t * mutex, pthread_cond_t * cond);
+    void set_callback(std::function<void(int)> &fcn);
     void loop(ChannelList &);
     void add_Channel_to_list(ChannelList &);
     int http_epoll_create(int size);
@@ -31,7 +32,7 @@ private:
     int _listenfd;
     pthread_mutex_t * _mutex_ptr;
     pthread_cond_t * _cond_ptr;
-    std::function<void()> read_callback;
+    std::function<void(int)> read_callback;
     
 };
 

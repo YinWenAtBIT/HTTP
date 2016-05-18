@@ -32,7 +32,7 @@ public:
     bool is_access(string &path);
 
     
-    bool execte_cgi(string &path);
+    bool execute_cgi(string &path);
     bool serve_file(string &path);
     bool put_file(string &path);
     void internal_server_error();

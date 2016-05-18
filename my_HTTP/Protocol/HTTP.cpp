@@ -72,9 +72,10 @@ void HTTP::accept_request()
 
     //get uri and query
     string raw_uri(cur, end);
-    cout<<"raw_uri: "<<raw_uri<<endl;
+    //cout<<"raw_uri: "<<raw_uri<<endl;
     string query, uri;
     uri = parse_uri(raw_uri, query);
+    //cout<<"query: "<<query<<endl<<"uri: "<<uri<<endl;
 
     _request.set_uri(uri);
     _request.set_query(query);
@@ -161,6 +162,7 @@ void HTTP::handle_request()
 
     if(!is_access(path))
     {
+        cout<<"outcome is cannot access: "<<path<<endl;
         serve_forbidden();
         return;
     }
@@ -174,14 +176,14 @@ void HTTP::handle_request()
             if(_request.get_query().empty())
                 success = serve_file(path);
             else
-                success = execte_cgi(path);
+                success = execute_cgi(path);
             break;
         case HTTP_Method::PUT:
             success = put_file(path);
             break;
 
         case HTTP_Method::POST:
-            success = execte_cgi(path);
+            success = execute_cgi(path);
             break;
 
     }
@@ -226,7 +228,7 @@ void HTTP::internal_server_error()
 }
 
 
-bool HTTP::execte_cgi(string &path)
+bool HTTP::execute_cgi(string &path)
 {
     pid_t pid;
     int input_cgi[2];
@@ -282,10 +284,14 @@ bool HTTP::execte_cgi(string &path)
         
         char buf[MAXLINE];
         char *start, *end;
+        char *finish, *rcur;
+
         int nread;
         while(nread = rio_readlineb(&rio, buf, MAXLINE))
         {
             start = buf;
+            finish = buf+nread;
+
             if(*start =='\r' && *(start+1) == '\n')
                 break;
 
@@ -293,22 +299,22 @@ bool HTTP::execte_cgi(string &path)
                 start++;
             
             end = start;
-            while(!isspace(*end))
+            while(*end !=':')
                 end++;
 
             string key(start, end);
+            
 
-            start = end;
-            while(*start != ':')
-                start++;
-            start ++;
+            start = end+1;
             while(isspace(*start))
                 start++;
-            end = start;
-            while(!isspace(*end) || *end != '\r' )
-                end++;
+            rcur =finish-1;
+            while(isspace(*rcur) && rcur >start)
+                rcur--;
+            if(!isspace(*rcur))
+                rcur++;
 
-            string value(start, end);
+            string value(start, rcur);
             _response.add_header(key, value);
         }
 
@@ -324,6 +330,7 @@ bool HTTP::execte_cgi(string &path)
         if(status == -1)
             return false;
     }
+    _response.set_status_code(200);
     return true;
 
 }

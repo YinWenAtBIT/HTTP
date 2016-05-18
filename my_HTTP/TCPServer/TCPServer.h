@@ -20,6 +20,7 @@
 #include <fcntl.h>
 #include <string.h>
 #include <string.h>
+#include <signal.h>
 
 
 template <typename Protocol>
@@ -58,6 +59,11 @@ public:
             }
 
         }
+        
+        struct sigaction act;
+        act.sa_handler = SIG_IGN;
+        if(sigaction(SIGPIPE, &act, NULL) != 0)
+            exit(1);
         epoll_loop.loop(worker_list);
     }
 

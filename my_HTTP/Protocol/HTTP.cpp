@@ -205,7 +205,6 @@ void HTTP::send_response()
     else
         send_data = _response.get_response();
 
-    cout<<"buf_data:\n"<<send_data<<endl;
     //rio_writen(_connfd, (void *)send_data.c_str(), send_data.size());
     int n = write(_connfd, send_data.c_str(), send_data.size());
     if(n == -1 && errno == SIGPIPE)
@@ -471,7 +470,7 @@ string HTTP::get_filetype(string &path)
         i--;
 
     if(path[i] == '/')
-        type = "/text/plain";
+        type = "text/plain";
     else
     {
         string sub= path.substr(i);
@@ -479,7 +478,7 @@ string HTTP::get_filetype(string &path)
         if(it != content_type_dict.end())
             type = it->second;
         else
-            type = "/text/plain";
+            type = "text/plain";
     }
 
     return type;

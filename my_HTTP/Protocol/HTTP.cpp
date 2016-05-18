@@ -37,10 +37,10 @@ void HTTP::accept_request()
 {
     char buf[MAXLINE];
     rio_t rio;
-    Rio_readinitb(&rio, _connfd);
+    rio_readinitb(&rio, _connfd);
     
     int nread;
-    nread = Rio_readlineb(&rio, buf, MAXLINE);
+    nread = rio_readlineb(&rio, buf, MAXLINE);
 
     string first_line(buf, buf+nread);
     cout<<"first line:\n"<<first_line<<endl;
@@ -92,7 +92,7 @@ void HTTP::accept_request()
     
     
     //get headers
-    while(nread = Rio_readlineb(&rio, buf, MAXLINE))
+    while(nread = rio_readlineb(&rio, buf, MAXLINE))
     {
         start = buf;
         if(*start == '\r' && *(start+1) == '\n')
@@ -119,7 +119,7 @@ void HTTP::accept_request()
         int len = atoi(len_str.data());
         while(len>0)
         {
-            nread = Rio_readnb(&rio, buf, MAXLINE);
+            nread = rio_readnb(&rio, buf, MAXLINE);
             if(nread <=0)
                 break;
             _request.append_to_body(buf, buf+nread);
@@ -207,7 +207,9 @@ void HTTP::send_response()
 
     cout<<"buf_data:\n"<<send_data<<endl;
     //rio_writen(_connfd, (void *)send_data.c_str(), send_data.size());
-    write(_connfd, send_data.c_str(), send_data.size());
+    int n = write(_connfd, send_data.c_str(), send_data.size());
+    if(n == -1 && errno == SIGPIPE)
+        close(_connfd);
 }
 
 
@@ -277,12 +279,12 @@ bool HTTP::execte_cgi(string &path)
 
         //read header
         rio_t rio;
-        Rio_readinitb(&rio, output_cgi[0]);
+        rio_readinitb(&rio, output_cgi[0]);
         
         char buf[MAXLINE];
         char *start, *end;
         int nread;
-        while(nread = Rio_readlineb(&rio, buf, MAXLINE))
+        while(nread = rio_readlineb(&rio, buf, MAXLINE))
         {
             start = buf;
             if(*start =='\r' && *(start+1) == '\n')
@@ -312,7 +314,7 @@ bool HTTP::execte_cgi(string &path)
         }
 
         //add body
-        while(nread = Rio_readnb(&rio, buf, MAXLINE))
+        while(nread = rio_readnb(&rio, buf, MAXLINE))
         {
             _response.append_to_body(buf, buf+nread);
         }

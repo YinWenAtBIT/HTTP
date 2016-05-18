@@ -15,7 +15,6 @@ using std::string;
 /*return uri and save query_str in query*/
 string parse_uri(string &path, string &query);
 
-bool isspace(char c);
-
+string get_now_time();
 
 #endif

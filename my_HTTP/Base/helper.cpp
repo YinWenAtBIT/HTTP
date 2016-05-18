@@ -25,8 +25,15 @@ string parse_uri(string &path, string &query)
     
 }
 
-
-bool issapce(char c)
+string get_now_time()
 {
-    return c==' ';
+    time_t rawtime;
+    time(&rawtime);
+    struct tm *timeinfo;
+    timeinfo = localtime(&rawtime);
+    char buf[64];
+    strftime(buf, sizeof(buf), "%a, %d %b %Y %H:%M:%S %Z", timeinfo);
+    string res(buf);
+    return res;
 }
+

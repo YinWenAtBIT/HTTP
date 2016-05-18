@@ -28,14 +28,14 @@ public:
     string get_absolute_path();
     string get_filetype(string &path);
     bool is_dir(string &path);
-    bool is_path_exit(string &path);
+    bool is_path_exist(string &path);
     bool is_access(string &path);
 
     
     bool execte_cgi(string &path);
     bool serve_file(string &path);
     bool put_file(string &path);
-    void internel_server_error();
+    void internal_server_error();
 
 
     int get_file_size(string &path);
@@ -44,6 +44,7 @@ public:
     void noimplement();
     void not_found();
     void serve_forbidden();
+    void set_child_env();
 
     bool serve_index();
     void serve_hello();

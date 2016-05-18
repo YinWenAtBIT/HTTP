@@ -7,26 +7,37 @@ CPPFLAGS=$(CFLAGS) -Woverloaded-virtual -Wsign-promo -fno-gnu-keywords -std=c++1
 SRC_DIR = ./src
 BUILD_DIR = ./Build
 
-OBJS :=echo_server.o csapp.o Channel.o Epoll.o  Echo.o
+MAIN_DIR = ./Main
+
+OBJS := csapp.o Channel.o Epoll.o  Echo.o helper.o HTTP.o HTTP_base.o HTTP_Request.o HTTP_Response.o
+
+
 
 LIBPATH=/usr/bin
 
 LIB=-lpthread #-fpermissive
 
-TARGET=my_HTTP
+TARGET=my_echo my_HTTP
+
+
 
 all : $(TARGET) 
 
 check : $(TARGET)
 		./$^
 
-$(TARGET) : $(OBJS)
-		$(CXX) $(CPPFLAGS) -o $(BUILD_DIR)/$@ $(BUILD_DIR)/*.o -L$(LIBPATH) $(LIB)		
+my_echo : $(OBJS) echo_server.o
+		$(CXX) $(CPPFLAGS) -o $(MAIN_DIR)/$@ $(MAIN_DIR)/echo_server.o $(BUILD_DIR)/*.o -L$(LIBPATH) $(LIB)		
 
-
+my_HTTP : $(OBJS) http_server.o
+		$(CXX) $(CPPFLAGS) -o $(MAIN_DIR)/$@ $(MAIN_DIR)/http_server.o $(BUILD_DIR)/*.o -L$(LIBPATH) $(LIB)		
 
 echo_server.o: 
-		$(CXX) $(CPPFLAGS) -c $(SRC_DIR)/echo_server.cpp -o $(BUILD_DIR)/$@ -L$(LIBPATH)  $(LIB)
+		$(CXX) $(CPPFLAGS) -c $(SRC_DIR)/echo_server.cpp -o $(MAIN_DIR)/$@ -L$(LIBPATH)  $(LIB)
+
+http_server.o: 
+		$(CXX) $(CPPFLAGS) -c $(SRC_DIR)/http_server.cpp -o $(MAIN_DIR)/$@ -L$(LIBPATH)  $(LIB)
+
 
 csapp.o:
 		$(CXX) $(CPPFLAGS) -c ./Base/csapp.cpp -o $(BUILD_DIR)/$@ -L$(LIBPATH)  $(LIB)
@@ -40,6 +51,21 @@ Epoll.o:
 Echo.o:
 		$(CXX) $(CPPFLAGS) -c ./Protocol/Echo.cpp -o $(BUILD_DIR)/$@ -L$(LIBPATH)  $(LIB)
 
+helper.o:
+		$(CXX) $(CPPFLAGS) -c ./Base/helper.cpp -o $(BUILD_DIR)/$@ -L$(LIBPATH)  $(LIB)
+
+HTTP.o:
+		$(CXX) $(CPPFLAGS) -c ./Protocol/HTTP.cpp -o $(BUILD_DIR)/$@ -L$(LIBPATH)  $(LIB)
+
+HTTP_base.o:
+		$(CXX) $(CPPFLAGS) -c ./Protocol/HTTP_base.cpp -o $(BUILD_DIR)/$@ -L$(LIBPATH)  $(LIB)
+
+HTTP_Request.o:
+		$(CXX) $(CPPFLAGS) -c ./Protocol/HTTP_Request.cpp -o $(BUILD_DIR)/$@ -L$(LIBPATH)  $(LIB)
+
+HTTP_Response.o:
+		$(CXX) $(CPPFLAGS) -c ./Protocol/HTTP_Response.cpp -o $(BUILD_DIR)/$@ -L$(LIBPATH)  $(LIB)
+
 clean:
-		rm -rf *.o *.d $(OBJS) $(DEPS) $(TARGET) 
+		cd ./Build && rm -rf .o *.d $(OBJS) $(DEPS) $(TARGET) && cd ../Main && rm -rf *.o *.d my*
 

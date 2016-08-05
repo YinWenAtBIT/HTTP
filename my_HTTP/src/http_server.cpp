@@ -12,7 +12,7 @@
 
 int main(int argc, char * argv[])
 {
-    TCPServer<HTTP> HTTPServer(8080, 5);
+    TCPServer<HTTP> HTTPServer(8080, 8);
     HTTPServer.run();
 }
 

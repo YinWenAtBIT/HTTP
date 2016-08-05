@@ -11,7 +11,7 @@
 
 int main(int argc, char * argv[])
 {
-    TCPServer<Echo> EchoServer(8080, 5);
+    TCPServer<Echo> EchoServer(8080, 8);
     EchoServer.run();
 }
 

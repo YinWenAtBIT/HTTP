@@ -24,7 +24,7 @@ Epoll::Epoll(int listen, pthread_mutex_t * mutex, pthread_cond_t * cond):
 
 void Epoll::loop(ChannelList & work_list)
 {
-    int epfd = http_epoll_create(1024);
+    epfd = http_epoll_create(1024);
     struct epoll_event events[MAX_EVENT];
     epoll_add_event(epfd, _listenfd, EPOLLIN | EPOLLET);
 
@@ -53,6 +53,8 @@ void Epoll::add_to_channel(int fd, ChannelList & work_list)
     new_one->set_read_flag(true);
     std::function<void()> fct = [=](){read_callback(fd);};
     new_one->set_read_callback(fct);
+    std::function<void(int)> fct_int = std::bind(Epoll::epoll_delete_event, this, std::placeholders::_1);
+    new_one->set_complete_callback(fct_int);
 
     pthread_mutex_lock(_mutex_ptr);
     work_list.push_back(new_one);
@@ -89,6 +91,19 @@ void Epoll::epoll_add_event(int epollfd, int fd, int state)
 	}	
 }
 
+void Epoll::epoll_delete_event(int fd_to_delete)
+{
+	struct epoll_event ev;
+	ev.events = EPOLL_CTL_DEL;
+	ev.data.fd = fd_to_delete;
+    
+	if(epoll_ctl(epfd, EPOLL_CTL_ADD, fd_to_delete, &ev) == -1)
+	{
+		perror("EPOLL_CTL_DEL");
+		exit(-1);
+	}	
+    close(fd_to_delete);
+}
 
 void Epoll::handle_accept(int epfd, int listenfd)
 {

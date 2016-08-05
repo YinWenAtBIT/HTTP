@@ -27,9 +27,11 @@ public:
     void handle_accept(int epfd, int listenfd);
     void set_fd_nonblocking(int fd);
     void add_to_channel(int fd, ChannelList & work_list);
-
+    void epoll_delete_event(int fd_to_delete);
+    
 private:
     int _listenfd;
+    int epfd;
     pthread_mutex_t * _mutex_ptr;
     pthread_cond_t * _cond_ptr;
     std::function<void(int)> read_callback;

@@ -19,6 +19,9 @@ void Echo::handle()
     rio_t rio;
     Rio_readinitb(&rio, connfd);
     int nread;
-    while(nread = Rio_readlineb(&rio, buf, MAXLINE))
+    while(nread = Rio_readlineb(&rio, buf, MAXLINE) >0)
         Rio_writen(connfd, buf, nread);
+    char wrong[20];
+    sprintf(wrong, "%s", "wrong input");
+    Rio_writen(connfd, wrong, 12);
 }

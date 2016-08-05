@@ -43,8 +43,8 @@ void HTTP::accept_request()
     nread = rio_readlineb(&rio, buf, MAXLINE);
 
     string first_line(buf, buf+nread);
-    cout<<"first line:\n"<<first_line<<endl;
-    cout<<"end of first_line"<<endl;
+    //cout<<"first line:\n"<<first_line<<endl;
+    //cout<<"end of first_line"<<endl;
 
 
     char *start = buf;

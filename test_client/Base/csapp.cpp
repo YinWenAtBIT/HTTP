@@ -722,7 +722,10 @@ ssize_t Rio_readlineb(rio_t *rp, void *usrbuf, size_t maxlen)
     ssize_t rc;
 
     if ((rc = rio_readlineb(rp, usrbuf, maxlen)) < 0)
-	unix_error("Rio_readlineb error");
+	{
+	//unix_error("Rio_readlineb error");
+	return -1;	
+	}
     return rc;
 } 
 

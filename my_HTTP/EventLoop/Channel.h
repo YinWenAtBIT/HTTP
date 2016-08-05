@@ -14,6 +14,7 @@ class Channel
 {
 public:
     typedef std::function<void()> callback;
+    typedef std::function<void(int)> completeCallback;
     
     Channel(int connfd);
     int fd() const;
@@ -21,14 +22,17 @@ public:
     void set_write_flag(bool flag);
     void set_read_callback(callback &read_call);
     void set_write_callback(callback &write_call);
+    void set_complete_callback(completeCallback & com_call);
     void handle();
     
 private:
     int _fd;
     bool _read_flag;
     bool _write_flag;
+    bool _com_flag;
     callback _read_callable;
     callback _write_callable;
+    completeCallback _complete_callback;
 };
 
 

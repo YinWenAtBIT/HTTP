@@ -32,7 +32,6 @@ int main(int argc, char *argv[])
     while(Fgets(buf, MAXLINE, stdin) != NULL)
     {
         Rio_writen(clientfd, buf, strlen(buf));
-        Rio_readlineb(&rio, buf, MAXLINE);
         Fputs(buf, stdout);
     }
     close(clientfd);

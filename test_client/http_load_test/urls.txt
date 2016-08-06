@@ -1,0 +1,4 @@
+http://127.0.0.1:8080
+http://127.0.0.1:8080/epoll_exam.cc
+http://127.0.0.1:8080/hello.txt
+http://127.0.0.1:8080/cgi-bin/adder?3&4

@@ -1,0 +1,44 @@
+测试http服务器所能承受的平均访问量
+测试命令行：
+http_load -parallel 5 -fetches 1000 urls.txt
+
+urls.txt文件：
+http://127.0.0.1:8080
+http://127.0.0.1:8080/epoll_exam.cc
+http://127.0.0.1:8080/hello.txt
+http://127.0.0.1:8080/cgi-bin/adder?3&4
+
+其中分别为欢迎页面，一段200行左右的代码，一段欢迎语句，和一个cgi加法程序
+
+输出结果：
+1000 fetches, 5 max parallel, 1.77109e+06 bytes, in 0.144897 seconds
+1771.09 mean bytes/connection
+6901.45 fetches/sec, 1.22231e+07 bytes/sec
+msecs/connect: 0.080099 mean, 0.855 max, 0.02 min
+msecs/first-response: 0.611617 mean, 10.135 max, 0.06 min
+HTTP response codes:
+  code 200 -- 1000
+
+结果解释：
+本地测试，1000次连接，5个进程并发， 总共传输1.77e6bytes数据，用时0.144897秒
+每个连接平均传输1771bytes数据
+每秒可以处理连接6901次连接，1.22e7bytes数据每秒
+响应时间：平均0.61ms，最长10.1ms，
+
+
+10w次测试命令行：
+[yw@yw http_load_test]$ http_load -p 10 -f 100000 urls.txt
+输出结果：
+100000 fetches, 10 max parallel, 1.89635e+08 bytes, in 104.269 seconds
+1896.35 mean bytes/connection
+959.056 fetches/sec, 1.8187e+06 bytes/sec
+msecs/connect: 0.154476 mean, 1002.64 max, 0.023 min
+msecs/first-response: 10.2142 mean, 216.913 max, 0.047 min
+HTTP response codes:
+  code 200 -- 100000
+
+结果解释：
+本地测试，10万次连接，10个进程并发， 总共传输1.89635e+08 bytes数据，用时104.269秒
+每个连接平均传输1896 bytes数据
+每秒可以处理连接959次连接，1.8187e+06数据每秒
+响应时间：平均10.2142ms，最长216ms，
